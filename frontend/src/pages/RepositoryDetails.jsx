@@ -175,9 +175,10 @@ export default function RepositoryDetails() {
                 is_active: "true",
                 backend_path: repoData.backend_path
             });
-            const response = await fetch('http://localhost:8000/api/db/add_repo', {
+            const response = await fetch('http://localhost:8000/api/github/create-webhook', {
                 method: 'POST',
                 headers: {
+                    'Authorization': `Bearer ${JSON.parse(localStorage.getItem('tokenInfo')).access_token}`,
                     'Content-Type': 'application/json',
                 },
                 body: req
