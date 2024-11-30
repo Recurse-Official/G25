@@ -203,7 +203,7 @@ export default function RepositoryDetails() {
     const deactivateRepository = async () => {
 
         try {
-            const response = await fetch('http://localhost:8000/api/db/remove_repo?' + new URLSearchParams({
+            const response = await fetch('http://localhost:8000/api/github/delete-webhook?' + new URLSearchParams({
                 id: repository.id
             }), {
                 method: 'DELETE',
