@@ -1,0 +1,4 @@
+{
+    "flowchart": "graph TD; A[Start] --> B{Home Route?}; B -- Yes --> C[Return 'Hello World']; B -- No --> D{Transcribe Route?}; D -- Yes --> E[Receive audio file, user ID, and speech diarization setting]; E --> F[Transcribe audio using SpeechToText]; F --> G[Return transcription]; D -- No --> H{Summarize Route?}; H -- Yes --> I[Receive conversation data]; I --> J[Summarize conversation using Summarizer]; J --> K[Return summary]; H -- No --> L[End]; C --> L; G --> L; K --> L;",
+    "explanation": "This flowchart visualizes the API routes and their corresponding actions.  It starts with the initial request and branches based on the requested route (home, transcribe, or summarize). Each branch represents the steps involved in processing the request and returning the response.  The flowchart uses standard Mermaid.js notation."
+}

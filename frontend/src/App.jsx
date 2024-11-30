@@ -2,6 +2,7 @@
 import { BrowserRouter as Router, Routes, Route, Link } from 'react-router-dom';
 import Home from "./pages/Home"
 import Navigation from "./components/Navigation"
+import Repository from './pages/Repository';
 import React, {useEffect, useState} from 'react';
 import { Loader2 } from 'lucide-react';
 import { ToastContainer, toast } from 'react-toastify';
@@ -54,6 +55,8 @@ function App() {
     checkLogin();
   }, []);
 
+
+
   return (
     <Router>
       <ToastContainer
@@ -78,6 +81,7 @@ function App() {
           ):
           <Routes>
             <Route path="/" element={<Home/>} />
+            <Route path="/repository" element={<Repository/>} />
           </Routes>
         }
       </div>
