@@ -3,8 +3,10 @@ from fastapi.responses import RedirectResponse
 import httpx
 from datetime import datetime, timedelta
 import jwt
+import json
 
 from utils.auth import get_current_user
+from database_models.token_store import save_token
 
 import os
 from dotenv import load_dotenv
@@ -19,13 +21,13 @@ ACCESS_TOKEN_EXPIRE_MINUTES = int(os.getenv("ACCESS_TOKEN_EXPIRE_MINUTES"))
 JWT_SECRET_KEY = os.getenv("JWT_SECRET_KEY")
 JWT_ALGORITHM = "HS256"
 
-print(
-    GITHUB_CLIENT_ID,
-    GITHUB_CLIENT_SECRET,
-    GITHUB_REDIRECT_URI,
-    ACCESS_TOKEN_EXPIRE_MINUTES,
-    JWT_SECRET_KEY
-)
+# print(
+#     GITHUB_CLIENT_ID,
+#     GITHUB_CLIENT_SECRET,
+#     GITHUB_REDIRECT_URI,
+#     ACCESS_TOKEN_EXPIRE_MINUTES,
+#     JWT_SECRET_KEY
+# )
 
 @router.get("/access-token")
 async def get_access_token(code: str):
@@ -44,6 +46,7 @@ async def get_access_token(code: str):
             headers={"Accept": "application/json"},
         )
         token_data = response.json()
+        print(json.dumps(token_data, indent=2)) #
         
         if "error" in token_data:
             raise HTTPException(status_code=400, detail=token_data["error"])
@@ -58,6 +61,7 @@ async def get_access_token(code: str):
             },
         )
         user_data = user_response.json()
+        print(json.dumps(user_data, indent=2))
 
         # Create session token
         session_data = {
@@ -66,6 +70,9 @@ async def get_access_token(code: str):
             "username": user_data["login"],
             "exp": datetime.utcnow() + timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES)
         }
+
+        print("savving token:\n ")
+        print(save_token(user_data["id"],user_data["login"], github_token))
         session_token = jwt.encode(
             session_data,
             JWT_SECRET_KEY,
