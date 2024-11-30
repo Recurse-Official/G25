@@ -7,6 +7,7 @@ import React, {useEffect, useState} from 'react';
 import { Loader2 } from 'lucide-react';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+import RepositoryDetails from './pages/RepositoryDetails';
 
 function App() {
 
@@ -40,6 +41,7 @@ function App() {
       if (!userResponse.ok) {
         setIsLoading(false);
         console.log("No User data found");
+        toast.error("Session Expired. Please login again.");
         localStorage.removeItem('tokenInfo');
         localStorage.removeItem('userInfo');
         return;
@@ -82,6 +84,7 @@ function App() {
           <Routes>
             <Route path="/" element={<Home/>} />
             <Route path="/repository" element={<Repository/>} />
+            <Route path="/repository/:id" element={<RepositoryDetails/>} />
           </Routes>
         }
       </div>

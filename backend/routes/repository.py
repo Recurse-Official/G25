@@ -152,7 +152,6 @@ async def get_repository_details(repo_id: int, current_user: dict = Depends(get_
             "visibility": repo_data["private"] and "private" or "public",
             "directory_structure": directory_structure
         }
-
 @router.post("/read_docs")
 async def read_documentation(request: ReadDocsRequest):
     try:
@@ -166,41 +165,51 @@ async def read_documentation(request: ReadDocsRequest):
             return {"Message": "Invalid JWT token"}
 
         async with httpx.AsyncClient() as client:
-            url = f"https://api.github.com/repos/{request.full_name}/contents/documentation.yaml?ref=doccie"
-            
             headers = {
-                "Authorization": f"Bearer {github_token}",  # Changed from 'token' to 'Bearer'
+                "Authorization": f"Bearer {github_token}",
                 "Accept": "application/vnd.github.v3.raw",
-                "X-GitHub-Api-Version": "2022-11-28"  # Added API version
+                "X-GitHub-Api-Version": "2022-11-28"
             }
             
-            response = await client.get(url, headers=headers)
+            # Fetch documentation.yaml
+            docs_url = f"https://api.github.com/repos/{request.full_name}/contents/documentation.yaml?ref=doccie"
+            docs_response = await client.get(docs_url, headers=headers)
             
-            if response.status_code == 401:
+            # Fetch dependency.mermaid
+            mermaid_url = f"https://api.github.com/repos/{request.full_name}/contents/dependency.mermaid?ref=doccie"
+            mermaid_response = await client.get(mermaid_url, headers=headers)
+            
+            # Check for authentication errors
+            if docs_response.status_code == 401 or mermaid_response.status_code == 401:
                 return {
                     "Message": "GitHub authentication failed. Please check your token.",
-                    "details": response.text
+                    "details": docs_response.text if docs_response.status_code == 401 else mermaid_response.text
                 }
             
-            if response.status_code == 404:
-                return {"Message": "Documentation file not found in doccie branch"}
+            # Check if files exist
+            if docs_response.status_code == 404 and mermaid_response.status_code == 404:
+                return {"Message": "Documentation files not found in doccie branch"}
             
-            if response.status_code != 200:
+            # Handle other error responses
+            if docs_response.status_code != 200 or mermaid_response.status_code != 200:
                 return {
-                    "Message": "Failed to fetch documentation file",
-                    "status_code": response.status_code,
-                    "response": response.text,
-                    "url": url
+                    "Message": "Failed to fetch documentation files",
+                    "yaml_status": docs_response.status_code,
+                    "mermaid_status": mermaid_response.status_code,
+                    "yaml_response": docs_response.text if docs_response.status_code != 200 else None,
+                    "mermaid_response": mermaid_response.text if mermaid_response.status_code != 200 else None
                 }
                 
             try:
-                yaml_content = yaml.safe_load(response.text)
+                yaml_content = yaml.safe_load(docs_response.text) if docs_response.status_code == 200 else None
+                mermaid_content = mermaid_response.text if mermaid_response.status_code == 200 else None
             except yaml.YAMLError as e:
                 return {"Message": f"Invalid YAML format: {str(e)}"}
                 
             return {
                 "Message": "Documentation fetched successfully",
-                "data": yaml_content
+                "data": yaml_content,
+                "dependency": mermaid_content
             }
             
     except httpx.RequestError as e:
