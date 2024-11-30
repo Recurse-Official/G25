@@ -1,9 +1,10 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-
+import json
 from routes.authentication import router as auth_router
 from routes.repository import router as repo_router
 from routes.repository import router as db_router
+from routes.github import router as github_router
 
 app = FastAPI()
 
@@ -19,11 +20,14 @@ app.add_middleware(
 app.include_router(auth_router, prefix="/api/auth", tags=["auth"])
 app.include_router(repo_router, prefix="/api/repo", tags=["repo"])
 app.include_router(db_router, prefix="/api/db", tags=["db"])
+app.include_router(github_router, prefix="/api/github", tags=["github"])
 
 # Root endpoint
 @app.get("/")
 async def root():
     return {"message": "API is running"}
+
+
 
 if __name__ == "__main__":
     import uvicorn
