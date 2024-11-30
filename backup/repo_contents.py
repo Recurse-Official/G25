@@ -102,7 +102,7 @@ def parse_directory(directory):
         # Compiled and cached files
         r"(\.pyc|\.pyo|\.pyd|\.class|\.log|\.sqlite3)$",
         # Large binary and media files
-        r"\.(gif|jpg|jpeg|png|bmp|webp|mp4|avi|mov|mp3|wav|zip|tar|gz|7z|ipynb)$",
+        r"\.(gif|jpg|jpeg|png|bmp|webp|mp4|avi|mov|mp3|wav|zip|tar|gz|7z|ipynb|yml|json|db)$",
         # ignore package_lock.json
         r"package-lock.json",
     ]
