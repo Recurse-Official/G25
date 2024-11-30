@@ -1,0 +1,83 @@
+openapi: 3.0.0
+info:
+  title: API Documentation
+  version: 1.0.0
+  description: Automatically generated API documentation
+paths:
+  /:
+    get:
+      summary: GET /
+      parameters: []
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+  /transcribe:
+    post:
+      summary: POST /transcribe
+      parameters: []
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  user:
+                    type: string
+                  speech_diarization:
+                    type: boolean
+                  conversation:
+                    type: string
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                user:
+                  type: string
+                speech_diarization:
+                  type: string
+                file:
+                  type: string
+                  format: binary
+  /summarise:
+    post:
+      summary: POST /summarise
+      parameters: []
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  user:
+                    type: string
+                  fast_output:
+                    type: boolean
+                  summary:
+                    type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                user:
+                  type: string
+                conversation:
+                  type: string
+                fast_output:
+                  type: string
