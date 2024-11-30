@@ -1,0 +1,115 @@
+{
+  "solvus/backend/app.py": {
+    "endpoints": [
+      {
+        "path": "/transcribe",
+        "method": "POST",
+        "parameters": [
+          {
+            "name": "user",
+            "type": "Form"
+          },
+          {
+            "name": "speech_diarization",
+            "type": "Form"
+          },
+          {
+            "name": "file",
+            "type": "File"
+          }
+        ],
+        "description": "Transcribes a speech file and returns the conversation."
+      },
+      {
+        "path": "/summarise",
+        "method": "POST",
+        "parameters": [
+          {
+            "name": "data",
+            "type": "dict"
+          }
+        ],
+        "description": "Summarizes a conversation based on the provided data."
+      }
+    ]
+  },
+  "solvus/backend/services/utils.py": {
+    "endpoints": []
+  },
+  "solvus/backend/services/summarize/summarize.py": {
+    "endpoints": []
+  },
+  "solvus/backend/services/speechToText/speechToText.py": {
+    "endpoints": []
+  },
+  "solvus/src/reportWebVitals.js": {
+    "endpoints": []
+  },
+  "solvus/src/index.js": {
+    "endpoints": []
+  },
+  "solvus/src/App.test.js": {
+    "endpoints": []
+  },
+  "solvus/src/setupTests.js": {
+    "endpoints": []
+  },
+  "solvus/src/App.js": {
+    "endpoints": []
+  },
+  "solvus/src/components/LoginPage.js": {
+    "endpoints": []
+  },
+  "solvus/src/components/HomePage.js": {
+    "endpoints": [
+      {
+        "path": "/logout",
+        "method": "POST",
+        "parameters": [],
+        "description": "Logs out the user and returns a success message."
+      },
+      {
+        "path": "/transcribe",
+        "method": "POST",
+        "parameters": [
+          {
+            "name": "audioFile",
+            "type": "file",
+            "description": "The WAV file containing the audio to be transcribed."
+          },
+          {
+            "name": "memoryOption",
+            "type": "boolean",
+            "description": "Whether to use a smaller model for transcription."
+          },
+          {
+            "name": "diarizationOption",
+            "type": "boolean",
+            "description": "Whether to enable speech diarization."
+          }
+        ],
+        "description": "Transcribes the given audio file and returns the transcribed text along with summarization options."
+      },
+      {
+        "path": "/summarize",
+        "method": "POST",
+        "parameters": [
+          {
+            "name": "conversation",
+            "type": "string",
+            "description": "The conversation to be summarized."
+          },
+          {
+            "name": "fast_output",
+            "type": "boolean",
+            "description": "Whether to use a faster model for summarization."
+          }
+        ],
+        "description": "Summarizes the given conversation text and returns the summary."
+      }
+    ]
+  },
+  "solvus/src/components/RegistrationPage.js": {
+    "endpoints": []
+  }
+}

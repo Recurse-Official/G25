@@ -1,4 +1,4 @@
-from backup.repo_contents import get_github_repo_contents
+from get_repo_contents import get_github_repo_contents
 from dotenv import load_dotenv
 import os
 import json
@@ -9,7 +9,7 @@ import aiohttp
 import time
 
 load_dotenv()
-SAMPLE_FILE = r"C:\Users\nikhi\Downloads\Doccie\doccie\backend\backup\repo_contents.json"
+SAMPLE_FILE = r"D:\Workspace\Hackathons\doccie\G25\Testing\ai_docs_gen\repo_contents.json"
 
 def determine_file_type(file_path):
     """Determine if a file is server-side or user-side based on extension"""
@@ -86,8 +86,8 @@ async def async_main():
     start_time = time.time()
     
     token = os.getenv("GITHUB_TOKEN")
-    owner = os.getenv("GITHUB_OWNER")
-    repo = os.getenv("GITHUB_REPO")
+    owner = "srujan-landeri"
+    repo = "doccie"
 
     print("Starting API documentation generation...")
     

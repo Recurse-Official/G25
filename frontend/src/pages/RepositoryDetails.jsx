@@ -183,9 +183,9 @@ export default function RepositoryDetails() {
                 },
                 body: req
             });
-
+            
             const data = await response.json();
-
+            
             if (!response.ok) {
                 toast.error(data.Message || 'Failed to activate repository');
                 return
@@ -198,19 +198,26 @@ export default function RepositoryDetails() {
             throw error;
         }
     };
-
+    
     // Function to deactivate a repository
-    const deactivateRepository = async () => {
-
+    const deactivateRepository = async (repoData) => {
+        
         try {
-            const response = await fetch('http://localhost:8000/api/github/delete-webhook?' + new URLSearchParams({
-                id: repository.id
-            }), {
+            const req = JSON.stringify({
+                id: repoData.id,
+                name: repoData.name,
+                full_name: repoData.full_name,
+                is_active: "true",
+                backend_path: repoData.backend_path
+            });
+
+            const response = await fetch('http://localhost:8000/api/github/create-webhook', {
                 method: 'DELETE',
-                Headers: {
+                headers: {
                     'Authorization': `Bearer ${JSON.parse(localStorage.getItem('tokenInfo')).access_token}`,
-                    'Content-Type': 'application/json'
-                }
+                    'Content-Type': 'application/json',
+                },
+                body: req
             });
 
             const data = await response.json();
@@ -340,7 +347,7 @@ export default function RepositoryDetails() {
                             Cancel
                         </button>
                         <button
-                            onClick={deactivateRepository}
+                            onClick={() => deactivateRepository(repository)}
                             className="px-4 py-2 bg-red-500 text-white rounded hover:bg-red-600 transition-colors"
                         >
                             Deactivate

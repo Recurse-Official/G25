@@ -1,0 +1,100 @@
+```yaml
+openapi: 3.0.0
+info:
+  title: Solvus API
+  version: 1.0.0
+paths:
+  /transcribe:
+    post:
+      tags:
+        - solvus/backend/app.py
+        - solvus/src/components/HomePage.js
+      summary: Transcribe a speech file
+      description: Transcribes a speech file and returns the conversation.  Also available at /src/components/HomePage.js.  Different parameter sets are used in each location.
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                user:
+                  type: string
+                  description: User information (details not specified)
+                speech_diarization:
+                  type: string
+                  description: Speech diarization option (details not specified)
+                file:
+                  type: string
+                  format: binary
+                  description: The audio file to transcribe.
+          application/json: #For HomePage version
+            schema:
+              type: object
+              properties:
+                audioFile:
+                  type: string
+                  format: binary
+                  description: The WAV file containing the audio to be transcribed.
+                memoryOption:
+                  type: boolean
+                  description: Whether to use a smaller model for transcription.
+                diarizationOption:
+                  type: boolean
+                  description: Whether to enable speech diarization.
+
+      responses:
+        '200':
+          description: Successful transcription
+  /summarise:
+    post:
+      tags:
+        - solvus/backend/app.py
+      summary: Summarize a conversation
+      description: Summarizes a conversation based on the provided data.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                data:
+                  type: object
+                  description: Conversation data (details not specified)
+      responses:
+        '200':
+          description: Successful summarization
+  /logout:
+    post:
+      tags:
+        - solvus/src/components/HomePage.js
+      summary: Log out user
+      description: Logs out the user and returns a success message.
+      responses:
+        '200':
+          description: Successful logout
+  /summarize:
+    post:
+      tags:
+        - solvus/src/components/HomePage.js
+      summary: Summarize a conversation
+      description: Summarizes the given conversation text and returns the summary.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                conversation:
+                  type: string
+                  description: The conversation to be summarized.
+                fast_output:
+                  type: boolean
+                  description: Whether to use a faster model for summarization.
+      responses:
+        '200':
+          description: Successful summarization
+
+```
