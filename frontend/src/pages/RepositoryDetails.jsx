@@ -187,7 +187,8 @@ export default function RepositoryDetails() {
             const data = await response.json();
 
             if (!response.ok) {
-                throw new Error(data.Message || 'Failed to activate repository');
+                toast.error(data.Message || 'Failed to activate repository');
+                return
             }
 
             toast.success('Repository is now montiored');
@@ -207,6 +208,7 @@ export default function RepositoryDetails() {
             }), {
                 method: 'DELETE',
                 Headers: {
+                    'Authorization': `Bearer ${JSON.parse(localStorage.getItem('tokenInfo')).access_token}`,
                     'Content-Type': 'application/json'
                 }
             });
