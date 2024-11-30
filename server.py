@@ -26,11 +26,16 @@ def health_check():
 
 @app.post("/github-webhook")
 async def github_webhook(request: Request):
-    payload = await request.body()
     # if not verify_signature(request, payload):
     #     raise HTTPException(status_code=400, detail="Invalid signature")
     #print content of the payload
-    print(json.loads(payload))
+    payload = request.headers
+    print(json.dumps(await request.json(), indent=2))
+    # print("Payload received from GitHub:", payload)
+    # print(json.loads(payload))
+    #print the response payload from github
+
+
 
     event = request.headers.get("X-GitHub-Event")
     if event == "push":
@@ -40,4 +45,4 @@ async def github_webhook(request: Request):
         return {"message": f"Unhandled event: {event}"}
 
 if __name__ == "__main__":
-    uvicorn.run(app, host="0.0.0.0", port=8000)
+    uvicorn.run("server:app", host="0.0.0.0", port=80, reload=True)# restart on file change
