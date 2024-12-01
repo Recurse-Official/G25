@@ -1,0 +1,678 @@
+{
+  "tester.py": {
+    "endpoints": []
+  },
+  "backend\\app.py": {
+    "endpoints": [
+      {
+        "path": "/api/auth/login",
+        "method": "POST",
+        "parameters": [
+          {
+            "name": "username",
+            "type": "string"
+          },
+          {
+            "name": "password",
+            "type": "string"
+          }
+        ],
+        "description": "Login endpoint for authentication.",
+        "response": {
+          "200": {
+            "description": "Authenticated user details."
+          }
+        },
+        "authentication": "Basic Auth required"
+      },
+      {
+        "path": "/api/auth/register",
+        "method": "POST",
+        "parameters": [
+          {
+            "name": "username",
+            "type": "string"
+          },
+          {
+            "name": "password",
+            "type": "string"
+          }
+        ],
+        "description": "Register endpoint for authentication.",
+        "response": {
+          "201": {
+            "description": "Registered user details."
+          }
+        },
+        "authentication": ""
+      },
+      {
+        "path": "/api/repo/get-repo-info",
+        "method": "GET",
+        "parameters": [
+          {
+            "name": "repo-name",
+            "type": "string"
+          }
+        ],
+        "description": "Get information about a specific repository.",
+        "response": {
+          "200": {
+            "schema": {
+              "type": "object",
+              "properties": {
+                "name": {
+                  "type": "string"
+                },
+                "description": {
+                  "type": "string"
+                }
+              },
+              "required": [
+                "name",
+                "description"
+              ]
+            }
+          }
+        },
+        "authentication": ""
+      },
+      {
+        "path": "/api/repo/create-repo",
+        "method": "POST",
+        "parameters": [
+          {
+            "name": "repo-name",
+            "type": "string"
+          },
+          {
+            "name": "repo-description",
+            "type": "string"
+          }
+        ],
+        "description": "Create a new repository.",
+        "response": {
+          "201": {
+            "schema": {
+              "type": "object",
+              "properties": {
+                "name": {
+                  "type": "string"
+                },
+                "description": {
+                  "type": "string"
+                }
+              },
+              "required": [
+                "name",
+                "description"
+              ]
+            }
+          }
+        },
+        "authentication": ""
+      },
+      {
+        "path": "/api/db/get-db-info",
+        "method": "GET",
+        "parameters": [
+          {
+            "name": "db-name",
+            "type": "string"
+          }
+        ],
+        "description": "Get information about a specific database.",
+        "response": {
+          "200": {
+            "schema": {
+              "type": "object",
+              "properties": {
+                "name": {
+                  "type": "string"
+                },
+                "description": {
+                  "type": "string"
+                }
+              },
+              "required": [
+                "name",
+                "description"
+              ]
+            }
+          }
+        },
+        "authentication": ""
+      },
+      {
+        "path": "/api/db/create-db",
+        "method": "POST",
+        "parameters": [
+          {
+            "name": "db-name",
+            "type": "string"
+          },
+          {
+            "name": "db-description",
+            "type": "string"
+          }
+        ],
+        "description": "Create a new database.",
+        "response": {
+          "201": {
+            "schema": {
+              "type": "object",
+              "properties": {
+                "name": {
+                  "type": "string"
+                },
+                "description": {
+                  "type": "string"
+                }
+              },
+              "required": [
+                "name",
+                "description"
+              ]
+            }
+          }
+        },
+        "authentication": ""
+      }
+    ]
+  },
+  "backend\\models\\data_models.py": {
+    "endpoints": [
+      {
+        "path": "/repos",
+        "method": "POST",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/components/schemas/addRepo"
+            }
+          },
+          {
+            "name": "access_token",
+            "in": "query",
+            "required": false
+          },
+          {
+            "name": "full_name",
+            "in": "path",
+            "required": true
+          }
+        ],
+        "description": "Create a new repository"
+      },
+      {
+        "path": "/repos/{id}",
+        "method": "GET",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "access_token",
+            "in": "query",
+            "required": false
+          },
+          {
+            "name": "full_name",
+            "in": "query",
+            "required": false
+          }
+        ],
+        "description": "Get repository data by ID"
+      },
+      {
+        "path": "/repos/{id}",
+        "method": "PUT",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "access_token",
+            "in": "query",
+            "required": false
+          },
+          {
+            "name": "full_name",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/components/schemas/addRepo"
+            }
+          },
+          {
+            "name": "backend_path",
+            "in": "query",
+            "required": false
+          }
+        ],
+        "description": "Update repository data by ID"
+      },
+      {
+        "path": "/repos/{id}",
+        "method": "DELETE",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "access_token",
+            "in": "query",
+            "required": false
+          }
+        ],
+        "description": "Delete repository by ID"
+      },
+      {
+        "path": "/docs/{full_name}",
+        "method": "GET",
+        "parameters": [
+          {
+            "name": "full_name",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "access_token",
+            "in": "query",
+            "required": false
+          }
+        ],
+        "description": "Get documentation by full name"
+      },
+      {
+        "path": "/docs/{full_name}",
+        "method": "GET",
+        "parameters": [
+          {
+            "name": "full_name",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "access_token",
+            "in": "query",
+            "required": false
+          }
+        ],
+        "description": "Get documentation by full name"
+      },
+      {
+        "path": "/docs/{full_name}",
+        "method": "POST",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/components/schemas/ReadDocsRequest"
+            }
+          },
+          {
+            "name": "access_token",
+            "in": "query",
+            "required": false
+          }
+        ],
+        "description": "Create new documentation entry"
+      },
+      {
+        "path": "/docs/{full_name}",
+        "method": "PUT",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "access_token",
+            "in": "query",
+            "required": false
+          }
+        ],
+        "description": "Update documentation entry by ID"
+      },
+      {
+        "path": "/docs/{full_name}",
+        "method": "DELETE",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "access_token",
+            "in": "query",
+            "required": false
+          }
+        ],
+        "description": "Delete documentation entry by ID"
+      }
+    ]
+  },
+  "backend\\routes\\assistant.py": {
+    "endpoints": [
+      {
+        "path": "/example",
+        "method": "GET",
+        "parameters": [],
+        "description": "Returns a list of example endpoints"
+      },
+      {
+        "path": "/users/{id}",
+        "method": "GET",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "description": "User ID"
+          }
+        ],
+        "description": "Retrieves user information by ID"
+      },
+      {
+        "path": "/users",
+        "method": "POST",
+        "parameters": [
+          {
+            "in": "body",
+            "name": "username",
+            "required": true,
+            "type": "string",
+            "description": "Username to create"
+          },
+          {
+            "in": "body",
+            "name": "email",
+            "required": true,
+            "type": "string",
+            "description": "Email address for the user"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "User created successfully"
+          }
+        },
+        "authentication": [
+          {
+            "type": "basic_auth",
+            "in": "header"
+          }
+        ]
+      },
+      {
+        "path": "/users/{id}",
+        "method": "PUT",
+        "parameters": [
+          {
+            "in": "body",
+            "name": "username",
+            "required": false,
+            "type": "string",
+            "description": "New username for the user"
+          },
+          {
+            "in": "body",
+            "name": "email",
+            "required": false,
+            "type": "string",
+            "description": "New email address for the user"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "User updated successfully"
+          }
+        },
+        "authentication": [
+          {
+            "type": "basic_auth",
+            "in": "header"
+          }
+        ]
+      },
+      {
+        "path": "/users/{id}",
+        "method": "DELETE",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "description": "User ID"
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "User deleted successfully"
+          }
+        },
+        "authentication": [
+          {
+            "type": "basic_auth",
+            "in": "header"
+          }
+        ]
+      }
+    ]
+  },
+  "backend\\routes\\authentication.py": {
+    "endpoints": [
+      {
+        "path": "/access-token",
+        "method": "POST",
+        "parameters": [
+          {
+            "name": "code",
+            "in": "query",
+            "description": "GitHub OAuth callback code"
+          }
+        ],
+        "request_body": {
+          "description": "Request body for GitHub OAuth callback"
+        },
+        "response": {
+          "description": "Response from GitHub OAuth callback"
+        },
+        "authentication": "Basic authentication and JWT token"
+      },
+      {
+        "path": "/user-data",
+        "method": "GET",
+        "parameters": [],
+        "response": {
+          "description": "User data response from GitHub API"
+        }
+      },
+      {
+        "path": "/example",
+        "method": "GET",
+        "parameters": [
+          {
+            "name": "param1",
+            "in": "query",
+            "description": "Query parameter 1"
+          },
+          {
+            "name": "param2",
+            "in": "path",
+            "description": "Path parameter 2"
+          }
+        ],
+        "response": {
+          "description": "Response from example API endpoint"
+        }
+      }
+    ]
+  },
+  "backend\\routes\\database.py": {
+    "endpoints": [
+      {
+        "path": "/create_database",
+        "method": "POST",
+        "parameters": [
+          {
+            "name": "createDbRequest",
+            "type": "createDb",
+            "required": true
+          }
+        ],
+        "description": "Create a new database with the specified name."
+      },
+      {
+        "path": "/add_repo",
+        "method": "POST",
+        "parameters": [
+          {
+            "name": "addRepoRequest",
+            "type": "addRepo",
+            "required": true
+          }
+        ],
+        "description": "Add a new repository to the database."
+      },
+      {
+        "path": "/remove_repo",
+        "method": "DELETE",
+        "parameters": [
+          {
+            "name": "id",
+            "type": "str",
+            "required": true
+          }
+        ],
+        "description": "Remove a repository from the database."
+      },
+      {
+        "path": "/get_data",
+        "method": "GET",
+        "parameters": [
+          {
+            "name": "getdatarequest",
+            "type": "getDataRequest",
+            "required": true
+          }
+        ],
+        "description": "Retrieve data from the database."
+      }
+    ]
+  },
+  "backend\\routes\\repository.py": {
+    "endpoints": [
+      {
+        "path": "/list",
+        "method": "GET",
+        "parameters": [
+          {
+            "name": "repo_id"
+          }
+        ],
+        "description": "List all repositories the user has access to with their database status."
+      },
+      {
+        "path": "/{repo_id}",
+        "method": "GET",
+        "parameters": [],
+        "description": "Get detailed information about a specific repository."
+      },
+      {
+        "path": "/read_docs",
+        "method": "POST",
+        "parameters": [
+          {
+            "name": "access_token",
+            "type": "string"
+          }
+        ],
+        "description": "Read documentation for a GitHub repository."
+      }
+    ]
+  },
+  "backend\\utils\\auth.py": {},
+  "client\\eslint.config.js": {
+    "endpoints": [
+      {
+        "path": "/example",
+        "method": "GET",
+        "parameters": [],
+        "description": "This endpoint retrieves a list of example files. The response includes the file name and type.",
+        "response": {
+          "schema": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "fileName": {
+                  "type": "string"
+                },
+                "fileType": {
+                  "type": "string"
+                }
+              },
+              "required": [
+                "fileName",
+                "fileType"
+              ]
+            }
+          }
+        },
+        "tags": [
+          "example"
+        ],
+        "authentication": "None"
+      }
+    ]
+  },
+  "client\\postcss.config.js": {
+    "endpoints": [
+      {
+        "path": "/example",
+        "method": "GET",
+        "parameters": [],
+        "description": "Returns a list of example resources."
+      }
+    ]
+  },
+  "client\\tailwind.config.js": {
+    "endpoints": []
+  }
+}
