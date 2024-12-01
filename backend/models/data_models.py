@@ -9,9 +9,9 @@ class addRepo(BaseModel):
     full_name: str
     is_active: str
     backend_path: Optional[str] = ""
+    webhook_id: Optional[str] = ""
 
 class getDataRequest(BaseModel):
-    dbName: str
     id: str
 
 class getDataResponse(BaseModel):
@@ -20,6 +20,7 @@ class getDataResponse(BaseModel):
     full_name: str
     is_active: str
     backend_path: str
+    webhook_id: str
 
 class RemoveRepo(BaseModel):
     id: str
