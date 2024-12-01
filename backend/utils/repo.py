@@ -21,8 +21,8 @@ def get_github_repo_contents(owner, repo, token, branch="main", output_file=None
     temp_dir = None
     try:
         # Validate token format
-        if not token.startswith(('ghp_', 'gho_', 'github_pat_')):
-            raise ValueError("Invalid GitHub token format")
+        # if not token.startswith(('ghp_', 'gho_', 'github_pat_')):
+        #     raise ValueError("Invalid GitHub token format")
 
         # Create a temporary directory
         temp_dir = tempfile.mkdtemp(prefix='doccie_')

@@ -6,9 +6,10 @@ import jwt
 import json
 
 from utils.auth import get_current_user
-from database_models.token_store import save_token
+from .assistant import async_main
+from database_models.token_store import save_token, read_token
 from models.data_models import addRepo
-from .database import add_user, get_data
+from .database import add_user, get_data, remove_repo
 
 import os
 from dotenv import load_dotenv
@@ -18,6 +19,7 @@ router = APIRouter()
 
 GITHUB_API_URL = "https://api.github.com"
 GITHUB_CALLBACK_URL = os.getenv("GITHUB_CALLBACK_URL")
+DOC_BRANCH = "doccie"
 
 @router.post("/create-webhook")
 async def create_github_webhook(addRepoRequest:addRepo, current_user: dict = Depends(get_current_user)):
@@ -57,8 +59,20 @@ async def github_webhook(request:Request):
     # print(json.loads(payload))
     #print the response payload from github
 
+
     event = request.headers.get("X-GitHub-Event")
-    if event == "push":
+    if (event == "push" or event == "ping") and (DOC_BRANCH not in payload.get("ref","")):
+        token = read_token(payload["repository"]["owner"]["id"])
+        if token is None:
+            raise HTTPException(status_code=404, detail="Token not found during webhook event")
+        print("Calling api documentation generation")
+        generate_api_docs = await async_main({
+            "owner":payload["repository"]["owner"]["login"],
+            "repo": payload["repository"]["name"],
+            "token":  token.token
+        })
+
+        print("API documentation generation completed", generate_api_docs)
         # Handle push event
         return {"message": "Push event received"}
     else:
@@ -73,11 +87,13 @@ async def delete_github_webhook(addRepoRequest:addRepo, current_user: dict = Dep
     }
 
     get_data_response = get_data(addRepoRequest.id)
+    print("Get data response: ", get_data_response)
 
     async with httpx.AsyncClient() as client:
         response = await client.delete(f"{GITHUB_API_URL}/repos/{current_user['username']}/{addRepoRequest.name}/hooks/{get_data_response.webhook_id}", headers=headers)
         if response.status_code == 204:
             print("Web hook deleted successfully")
-            return {"message": "Webhook deleted successfully"}
+            return remove_repo(addRepoRequest.id)
+            # return {"message": "Webhook deleted successfully"}
         else:
             raise HTTPException(status_code=response.status_code, detail=response.json())

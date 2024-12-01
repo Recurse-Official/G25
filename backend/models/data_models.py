@@ -19,7 +19,7 @@ class getDataResponse(BaseModel):
     name: str
     full_name: str
     is_active: str
-    backend_path: str
+    backend_path: Optional[str]
     webhook_id: str
 
 class RemoveRepo(BaseModel):

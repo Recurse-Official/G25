@@ -192,13 +192,13 @@ async def read_documentation(request: ReadDocsRequest):
             
             # Handle other error responses
             if docs_response.status_code != 200 or mermaid_response.status_code != 200:
-                return {
+                print({
                     "Message": "Failed to fetch documentation files",
                     "yaml_status": docs_response.status_code,
                     "mermaid_status": mermaid_response.status_code,
                     "yaml_response": docs_response.text if docs_response.status_code != 200 else None,
                     "mermaid_response": mermaid_response.text if mermaid_response.status_code != 200 else None
-                }
+                })
                 
             try:
                 yaml_content = yaml.safe_load(docs_response.text) if docs_response.status_code == 200 else None

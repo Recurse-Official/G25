@@ -49,7 +49,7 @@ def add_user(addRepoRequest : addRepo):
         logging.error(f"Unexpected error: {e}")
         return {"Message": f"Unexpected error: {str(e)}"}
     
-@router.delete("/remove_repo")
+# @router.delete("/remove_repo")
 def remove_repo(id: str):
     try:
         db_path = os.path.join("backend/database", "repos.db")

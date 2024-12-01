@@ -19,6 +19,8 @@ class DocsRequest(BaseModel):
 
 load_dotenv()
 
+OLLAMA_URL = os.getenv("OLLAMA_URL")
+
 def determine_file_type(file_path):
     """Determine if a file is server-side or user-side based on extension"""
     server_extensions = {'.py', '.php', '.rb', '.java', '.go', '.rs', '.cs', '.js'}
@@ -34,7 +36,7 @@ def determine_file_type(file_path):
 async def process_with_ollama(session, content):
     """Process file content through Ollama API asynchronously with improved prompt"""
     async with session.post(
-        "http://localhost:11434/api/generate",
+        OLLAMA_URL,
         json={
             "model": "llama3.2:latest",
             "format": "json",
@@ -196,15 +198,17 @@ async def save_to_github_branch(owner: str, repo: str, token: str, content: str,
             print(f"Error saving to GitHub: {str(e)}")
             return False
     
-@router.post("/generate-api-docs")
-async def async_main(request: DocsRequest):
+# @router.post("/generate-api-docs")
+async def async_main(request):
     start_time = time.time()
 
     print("Starting API documentation generation...")
     
-    owner = request.owner
-    repo = request.repo
-    token = request.token
+    owner = request["owner"]
+    repo = request["repo"]
+    token = request["token"]
+
+    print(f"Owner: {owner}, Repo: {repo}, Token: {token}")
     
     # Try to get repository contents, fall back to sample file if it fails
     repo_contents = get_github_repo_contents(owner, repo, token)
