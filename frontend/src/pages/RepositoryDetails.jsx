@@ -173,7 +173,7 @@ export default function RepositoryDetails() {
                 name: repoData.name,
                 full_name: repoData.full_name,
                 is_active: "true",
-                backend_path: repoData.backend_path
+                backend_path: repoData.backend_path || ""
             });
             const response = await fetch('http://localhost:8000/api/github/create-webhook', {
                 method: 'POST',
@@ -208,7 +208,7 @@ export default function RepositoryDetails() {
                 name: repoData.name,
                 full_name: repoData.full_name,
                 is_active: "true",
-                backend_path: repoData.backend_path
+                backend_path: ""
             });
 
             const response = await fetch('http://localhost:8000/api/github/delete-webhook', {
@@ -253,6 +253,7 @@ export default function RepositoryDetails() {
             if (shouldActivate) {
                 console.log("Activate the repository")
                 if (repository.backend_path === "" || repository.backend_path === null) {
+                    repository.backend_path = "";
                     toast.info('Continuing without backend path');
                 }
                 const result = await activateRepository(repository);
