@@ -5,6 +5,7 @@ from routes.authentication import router as auth_router
 from routes.repository import router as repo_router
 from routes.repository import router as db_router
 from routes.github import router as github_router
+from routes.assistant import router as assistant_router
 
 app = FastAPI()
 
@@ -21,6 +22,7 @@ app.include_router(auth_router, prefix="/api/auth", tags=["auth"])
 app.include_router(repo_router, prefix="/api/repo", tags=["repo"])
 app.include_router(db_router, prefix="/api/db", tags=["db"])
 app.include_router(github_router, prefix="/api/github", tags=["github"])
+app.include_router(assistant_router, prefix="/api/assistant", tags=["assistant"])
 
 # Root endpoint
 @app.get("/")

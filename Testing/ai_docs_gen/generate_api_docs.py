@@ -9,7 +9,7 @@ import aiohttp
 import time
 
 load_dotenv()
-SAMPLE_FILE = r"D:\Workspace\Hackathons\doccie\G25\Testing\ai_docs_gen\repo_contents.json"
+SAMPLE_FILE = r"C:\Users\nikhi\Downloads\Doccie\doccie\backend\backup\repo_contents.json"
 
 def determine_file_type(file_path):
     """Determine if a file is server-side or user-side based on extension"""
@@ -24,16 +24,25 @@ def determine_file_type(file_path):
     return "other"
 
 async def process_with_ollama(session, content):
-    """Process file content through Ollama API asynchronously"""
+    """Process file content through Ollama API asynchronously with improved prompt"""
     async with session.post(
         "http://localhost:11434/api/generate",
         json={
-            "model": "qwen2.5-coder:3b",
+            "model": "llama3.2:latest",
             "format": "json",
             "stream": False,
-            "prompt": f"""Analyze this code and extract API Endpoints information in JSON format. Only API Endpoints are needed, no other information:
+            "prompt": f"""You are an expert API documentation generator. Analyze the following code and extract detailed API endpoint information. Focus on:
+            1. Complete endpoint paths
+            2. HTTP methods (GET, POST, PUT, DELETE, etc.)
+            3. Request parameters (query params, path params, request body)
+            4. Response structure
+            5. Authentication requirements
+            6. Purpose/description of each endpoint
+
+            Code to analyze:
             {content}
-            Return only valid JSON with this structure:
+
+            Return a valid JSON object with the following structure:
             {{
                 "endpoints": [
                     {{
@@ -43,12 +52,23 @@ async def process_with_ollama(session, content):
                         "description": "Description of endpoint",
                     }}
                 ],
-            }}"""
+            }}
+
+            Important:
+            - Extract only actual API endpoints from the code
+            - Include all parameters, whether they're in the URL, query string, or request body
+            - Provide accurate response structures based on the code
+            - Include authentication requirements if specified
+            - Group related endpoints with tags
+            - Ensure the description clearly explains the endpoint's purpose
+            - If you can't determine certain details, use reasonable defaults based on the code context
+
+            Analyze every aspect of the code carefully to ensure accurate endpoint documentation."""
         }
     ) as response:
         response_data = await response.json()
         return response_data.get("response", "")
-
+    
 async def process_files(repo_contents):
     """Process files concurrently with a semaphore to limit concurrent requests"""
     semaphore = asyncio.Semaphore(2)  # Limit to 2 concurrent requests
@@ -63,6 +83,8 @@ async def process_file(session, semaphore, file_path, file_info):
     """Process a single file with semaphore control"""
     async with semaphore:
         try:
+            print(f"Processing {file_path}...")
+            print(f"Content: {file_info['content'][:100]}...")  # Truncate content for display
             api_info = await process_with_ollama(session, file_info["content"])
             return file_path, json.loads(api_info)
         except Exception as e:
@@ -85,7 +107,7 @@ def generate_yaml_with_gemini(api_data):
 async def async_main():
     start_time = time.time()
     
-    token = os.getenv("GITHUB_TOKEN")
+    token = token = os.getenv("GITHUB_TOKEN")
     owner = "srujan-landeri"
     repo = "doccie"
 

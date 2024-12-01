@@ -1,57 +1,34 @@
 ```yaml
 openapi: 3.0.0
 info:
-  title: Solvus API
+  title: API Endpoints
   version: 1.0.0
 paths:
-  /transcribe:
-    post:
+  /example:
+    get:
+      summary: This is an example endpoint
+      description: This is an example endpoint
       tags:
-        - solvus/backend/app.py
-        - solvus/src/components/HomePage.js
-      summary: Transcribe a speech file
-      description: Transcribes a speech file and returns the conversation.  Also available at /src/components/HomePage.js.  Different parameter sets are used in each location.
-      requestBody:
-        required: true
-        content:
-          multipart/form-data:
-            schema:
-              type: object
-              properties:
-                user:
-                  type: string
-                  description: User information (details not specified)
-                speech_diarization:
-                  type: string
-                  description: Speech diarization option (details not specified)
-                file:
-                  type: string
-                  format: binary
-                  description: The audio file to transcribe.
-          application/json: #For HomePage version
-            schema:
-              type: object
-              properties:
-                audioFile:
-                  type: string
-                  format: binary
-                  description: The WAV file containing the audio to be transcribed.
-                memoryOption:
-                  type: boolean
-                  description: Whether to use a smaller model for transcription.
-                diarizationOption:
-                  type: boolean
-                  description: Whether to enable speech diarization.
-
-      responses:
-        '200':
-          description: Successful transcription
-  /summarise:
-    post:
+        - Example
+  /users/{user_id}:
+    get:
+      summary: Retrieve a user by ID
+      description: Retrieve a user by ID
       tags:
-        - solvus/backend/app.py
-      summary: Summarize a conversation
-      description: Summarizes a conversation based on the provided data.
+        - Users
+      parameters:
+        - in: path
+          name: user_id
+          schema:
+            type: integer
+          required: true
+          description: The ID of the user to retrieve
+  /users:
+    post:
+      summary: Create a new user
+      description: Create a new user
+      tags:
+        - Users
       requestBody:
         required: true
         content:
@@ -59,42 +36,678 @@ paths:
             schema:
               type: object
               properties:
-                data:
+                username:
+                  type: string
+                  required: true
+                  description: The username of the user to create
+                password:
+                  type: string
+                  required: true
+                  description: The password of the user to create
+  /orders/{order_id}:
+    get:
+      summary: Retrieve an order by ID
+      description: Retrieve an order by ID
+      tags:
+        - Orders
+      parameters:
+        - in: path
+          name: order_id
+          schema:
+            type: integer
+          required: true
+          description: The ID of the order to retrieve
+  /orders:
+    post:
+      summary: Create a new order
+      description: Create a new order
+      tags:
+        - Orders
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                product_id:
+                  type: integer
+                  required: true
+                  description: The ID of the product to create an order for
+                quantity:
+                  type: integer
+                  required: true
+                  description: The quantity of the product to order
+  /api/auth/login:
+    post:
+      summary: Log in to the API with username and password
+      description: Log in to the API with username and password
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                username:
+                  type: string
+                password:
+                  type: string
+      security:
+        - BasicAuth: []
+  /api/auth/register:
+    post:
+      summary: Register a new user with username and password
+      description: Register a new user with username and password
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                username:
+                  type: string
+                password:
+                  type: string
+      security:
+        - BasicAuth: []
+  /api/repo/get-repo:
+    get:
+      summary: Get a repository by its ID
+      description: Get a repository by its ID
+      parameters:
+        - in: query
+          name: repo_id
+          schema:
+            type: integer
+      responses:
+        '200':
+          $ref: '#/components/responses/RepoResponse'
+  /api/repo/create-repo:
+    post:
+      summary: Create a new repository with name and description
+      description: Create a new repository with name and description
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                repo_name:
+                  type: string
+                repo_description:
+                  type: string
+      responses:
+        '201':
+          $ref: '#/components/responses/RepoResponse'
+  /api/db/get-tables:
+    get:
+      summary: Get a list of tables in the database with table name
+      description: Get a list of tables in the database with table name
+      parameters:
+        - in: query
+          name: table_name
+          schema:
+            type: string
+      responses:
+        '200':
+          $ref: '#/components/responses/TableListResponse'
+  /api/db/create-table:
+    post:
+      summary: Create a new table in the database with name and columns
+      description: Create a new table in the database with name and columns
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                table_name:
+                  type: string
+                table_columns:
+                  type: array
+                  items:
+                    type: string
+      responses:
+        '201':
+          $ref: '#/components/responses/TableResponse'
+  /repositories:
+    post:
+      summary: Create a new repository in the database.
+      description: Create a new repository in the database.
+      requestBody:
+        $ref: '#/components/requestBodies/addRepo'
+      responses:
+        '200':
+          $ref: '#/components/responses/getDataResponse'
+  /repositories/{id}:
+    get:
+      summary: Retrieve a specific repository by its id.
+      description: Retrieve a specific repository by its id.
+      parameters:
+        - in: path
+          name: id
+          schema:
+            type: integer
+          required: true
+          description: The id of the repository to retrieve.
+      responses:
+        '200':
+          $ref: '#/components/responses/getDataResponse'
+    put:
+      summary: Update a specific repository by its id.
+      description: Update a specific repository by its id.
+      parameters:
+        - in: path
+          name: id
+          schema:
+            type: integer
+          required: true
+          description: The id of the repository to update.
+        - in: query
+          name: backend_path
+          schema:
+            type: string
+          required: false
+          description: The new backend path for the repository.
+      requestBody:
+        $ref: '#/components/requestBodies/RemoveRepo'
+      responses:
+        '200':
+          $ref: '#/components/responses/getDataResponse'
+      security:
+        - bearerAuth: []
+    delete:
+      summary: Delete a specific repository by its id.
+      description: Delete a specific repository by its id.
+      parameters:
+        - in: path
+          name: id
+          schema:
+            type: integer
+          required: true
+          description: The id of the repository to delete.
+      requestBody:
+        $ref: '#/components/requestBodies/createDb'
+      responses:
+        '200':
+          $ref: '#/components/responses/getDataResponse'
+      security:
+        - bearerAuth: []
+  /repositories/{dbName}/repos/{id}:
+    get:
+      summary: Retrieve a specific repository in a database by its db name and id.
+      description: Retrieve a specific repository in a database by its db name and id.
+      parameters:
+        - in: path
+          name: dbName
+          schema:
+            type: string
+          required: true
+          description: The name of the database to retrieve repositories from.
+        - in: path
+          name: id
+          schema:
+            type: integer
+          required: true
+          description: The id of the repository to retrieve.
+      responses:
+        '200':
+          $ref: '#/components/responses/getDataResponse'
+      security:
+        - bearerAuth: []
+  /repositories/{dbName}/repos:
+    get:
+      summary: Retrieve all repositories in a database by its db name.
+      description: Retrieve all repositories in a database by its db name.
+      parameters:
+        - in: query
+          name: dbName
+          schema:
+            type: string
+          required: true
+          description: The name of the database to retrieve repositories from.
+      responses:
+        '200':
+          $ref: '#/components/responses/getDataResponse'
+      security:
+        - bearerAuth: []
+    post:
+      summary: Create a new repository in a database.
+      description: Create a new repository in a database.
+      parameters:
+        - in: path
+          name: dbName
+          schema:
+            type: string
+          required: true
+          description: The name of the database to create a new repository in.
+        - in: query
+          name: backend_path
+          schema:
+            type: string
+          required: false
+          description: The new backend path for the repository.
+      requestBody:
+        $ref: '#/components/requestBodies/createDb'
+      responses:
+        '200':
+          $ref: '#/components/responses/getDataResponse'
+      security:
+        - bearerAuth: []
+  /documents/{full_name}:
+    get:
+      summary: Retrieve a specific document by its full name.
+      description: Retrieve a specific document by its full name.
+      parameters:
+        - in: path
+          name: full_name
+          schema:
+            type: string
+          required: true
+          description: The full name of the document to retrieve.
+      responses:
+        '200':
+          $ref: '#/components/responses/getDataResponse'
+      security:
+        - bearerAuth: []
+    post:
+      summary: Create a new document.
+      description: Create a new document.
+      requestBody:
+        $ref: '#/components/requestBodies/addRepo'
+      responses:
+        '200':
+          $ref: '#/components/responses/getDataResponse'
+  /access-token:
+    post:
+      summary: GitHub OAuth callback Handler
+      description: GitHub OAuth callback Handler
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                code:
+                  type: string
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  access_token:
+                    type: string
+                  token_type:
+                    type: string
+                required:
+                  - access_token
+                  - token_type
+  /user-data:
+    get:
+      summary: Get user data
+      description: Get user data
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  id:
+                    type: integer
+                  login:
+                    type: string
+                  avatar_url:
+                    type: string
+                required:
+                  - id
+                  - login
+      security:
+        - github_token: []
+  /login:
+    post:
+      summary: Obtain an authentication token for future requests
+      description: Obtain an authentication token for future requests
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TokenRequest'
+        example:
+          value: '{"username":"john","password":"password123"}'
+          description: Example request body
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/JWTResponse'
+          example:
+            value: '{"access_token":"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaGFuIjoiMjMwfQ.SflKxwRJSMeKKF2QT4fwpMeJf36POk6yJV_adQssw5c", "token_type":"Bearer"}'
+            description: Example JWT response
+  /user:
+    get:
+      summary: Retrieve the authenticated user's information
+      description: Retrieve the authenticated user's information
+      parameters:
+        - in: header
+          name: token
+          schema:
+            type: string
+          required: true
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserResponse'
+          example:
+            value: '{"github_token":"abc123","user_id":1,"username":"john"}'
+            description: Example user response
+      security:
+        - bearerAuth: []
+  /protected:
+    get:
+      summary: Protect a resource with authentication and authorization checks
+      description: Protect a resource with authentication and authorization checks
+      parameters:
+        - in: header
+          name: token
+          schema:
+            type: string
+          required: true
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProtectedResponse'
+          example:
+            value: '{"message":"Hello, World!"}'
+            description: Example protected response
+      security:
+        - bearerAuth: []
+  /eslint-config:
+    get:
+      summary: Retrieve ESLint configuration details.
+      description: Retrieve ESLint configuration details.
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/configuration'
+      tags:
+        - configuration
+    post:
+      summary: Update ESLint configuration.
+      description: Update ESLint configuration.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/configuration'
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/configuration'
+      tags:
+        - configuration
+  /eslint-config/{language}:
+    get:
+      summary: Retrieve ESLint configuration for a specific language.
+      description: Retrieve ESLint configuration for a specific language.
+      parameters:
+        - in: path
+          name: language
+          schema:
+            type: string
+          required: true
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/configuration'
+      tags:
+        - configuration
+    post:
+      summary: Update ESLint configuration for a specific language.
+      description: Update ESLint configuration for a specific language.
+      parameters:
+        - in: path
+          name: language
+          schema:
+            type: string
+          required: true
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/configuration'
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/configuration'
+      tags:
+        - configuration
+  /:
+    get:
+      summary: Root endpoint for Vite development server.
+      description: Root endpoint for Vite development server.
+      responses:
+        '200':
+          description: OK
+  /server:
+    get:
+      summary: Gets the Vite server configuration.
+      description: Gets the Vite server configuration.
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  server:
+                    type: object
+                    properties:
+                      port:
+                        type: integer
+    post:
+      summary: Updates the Vite server configuration.
+      description: Updates the Vite server configuration.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                server:
                   type: object
-                  description: Conversation data (details not specified)
+                  properties:
+                    port:
+                      type: integer
       responses:
         '200':
-          description: Successful summarization
-  /logout:
-    post:
-      tags:
-        - solvus/src/components/HomePage.js
-      summary: Log out user
-      description: Logs out the user and returns a success message.
-      responses:
-        '200':
-          description: Successful logout
-  /summarize:
-    post:
-      tags:
-        - solvus/src/components/HomePage.js
-      summary: Summarize a conversation
-      description: Summarizes the given conversation text and returns the summary.
-      requestBody:
-        required: true
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  server:
+                    type: object
+                    properties:
+                      port:
+                        type: integer
+
+components:
+  responses:
+    RepoResponse:
+      '200':
+        description: Repository data in JSON format
         content:
           application/json:
             schema:
-              type: object
-              properties:
-                conversation:
-                  type: string
-                  description: The conversation to be summarized.
-                fast_output:
-                  type: boolean
-                  description: Whether to use a faster model for summarization.
-      responses:
-        '200':
-          description: Successful summarization
+              $ref: '#/components/schemas/RepoData'
+    TableListResponse:
+      '200':
+        description: List of table data in JSON format
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TableList'
+    TableResponse:
+      '201':
+        description: Table data in JSON format
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TableData'
+    getDataResponse:
+      description: Success response
+    ExampleEndpointResponse:
+      description: Example endpoint response
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              id:
+                type: integer
+              name:
+                type: string
+              description:
+                type: string
+    DeleteResponse:
+      description: Delete response
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              message:
+                type: string
+  requestBodies:
+    addRepo:
+      description: Request body for adding a repository
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              name:
+                type: string
+              description:
+                type: string
+    RemoveRepo:
+      description: Request body for removing a repository
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              id:
+                type: integer
+    createDb:
+      description: Request body for creating a database
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              name:
+                type: string
+              path:
+                type: string
+  schemas:
+    RepoData:
+      type: object
+      properties:
+        id:
+          type: integer
+        name:
+          type: string
+        description:
+          type: string
+    TableList:
+      type: array
+      items:
+        $ref: '#/components/schemas/TableData'
+    TableData:
+      type: object
+      properties:
+        id:
+          type: integer
+        name:
+          type: string
+        columns:
+          type: array
+          items:
+            type: string
+    TokenRequest:
+      type: object
+      properties:
+        username:
+          type: string
+        password:
+          type: string
+    JWTResponse:
+      type: object
+      properties:
+        access_token:
+          type: string
+        token_type:
+          type: string
+    UserResponse:
+      type: object
+      properties:
+        github_token:
+          type: string
+        user_id:
+          type: integer
+        username:
+          type: string
+    ProtectedResponse:
+      type: object
+      properties:
+        message:
+          type: string
+    configuration:
+      type: object
+      properties:
+        rules:
+          type: object
+
+security:
+  bearerAuth:
+    type: http
+    scheme: bearer
+    bearerFormat: JWT
+
+tags:
+  - name: Authentication
+    description: Endpoints related to user authentication
+  - name: User
+    description: Endpoints related to user information
+  - name: Protected
+    description: Endpoints protected by authentication and authorization checks
+  - name: configuration
+    description: Endpoints related to configuration
+
 
 ```

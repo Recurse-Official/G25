@@ -253,8 +253,7 @@ export default function RepositoryDetails() {
             if (shouldActivate) {
                 console.log("Activate the repository")
                 if (repository.backend_path === "" || repository.backend_path === null) {
-                    toast.error('Please enter a valid backend path');
-                    return;
+                    toast.info('Continuing without backend path');
                 }
                 const result = await activateRepository(repository);
                 console.log('Repository activated:', result);
