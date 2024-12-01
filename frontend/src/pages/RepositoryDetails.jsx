@@ -211,7 +211,7 @@ export default function RepositoryDetails() {
                 backend_path: repoData.backend_path
             });
 
-            const response = await fetch('http://localhost:8000/api/github/create-webhook', {
+            const response = await fetch('http://localhost:8000/api/github/delete-webhook', {
                 method: 'DELETE',
                 headers: {
                     'Authorization': `Bearer ${JSON.parse(localStorage.getItem('tokenInfo')).access_token}`,

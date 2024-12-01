@@ -21,7 +21,7 @@ def create_database(createDbRequest : createDb):
         with sqlite3.connect(db_path) as db:
             cursor = db.cursor()
             cursor.execute(
-                "CREATE TABLE repos (id TEXT PRIMARY KEY, name TEXT, full_name TEXT, is_active TEXT, backend_path TEXT)"
+                "CREATE TABLE repos (id TEXT PRIMARY KEY, name TEXT, full_name TEXT, is_active TEXT, backend_path TEXT, webhook_id TEXT)"
             )
             db.commit()
             logging.info("Database created")
@@ -30,13 +30,13 @@ def create_database(createDbRequest : createDb):
         logging.error(f"Database error: {e}")
         return {"message": f"Database error: {str(e)}"}
 
-@router.post("/add_repo")
+# @router.post("/add_repo")
 def add_user(addRepoRequest : addRepo):
     try:
         db_path = os.path.join("backend/database", f"repos.db")
         with sqlite3.connect(db_path) as db:
             cursor=db.cursor()
-            cursor.execute("INSERT INTO repos (id, name, full_name, is_active, backend_path) VALUES (?,?,?,?,?)",(addRepoRequest.id, addRepoRequest.name, addRepoRequest.full_name, addRepoRequest.is_active, addRepoRequest.backend_path))
+            cursor.execute("INSERT INTO repos (id, name, full_name, is_active, backend_path, webhook_id) VALUES (?,?,?,?,?,?)",(addRepoRequest.id, addRepoRequest.name, addRepoRequest.full_name, addRepoRequest.is_active, addRepoRequest.backend_path,addRepoRequest.webhook_id))
             db.commit()
             logging.info("Repo added")
             return {"Message": "Repo added successfully"}
@@ -78,8 +78,8 @@ def remove_repo(id: str):
         logging.error(f"Unexpected error: {e}")
         return {"Message": f"Unexpected error: {str(e)}"}
     
-@router.get("/get_data")
-def get_data(getdatarequest: getDataRequest):
+# @router.get("/get_data")
+def get_data(id: str):
     try:
         # Use path joining for cross-platform compatibility
         db_path = os.path.join("backend/database", "repos.db")
@@ -87,7 +87,7 @@ def get_data(getdatarequest: getDataRequest):
         with sqlite3.connect(db_path) as db:
             cursor = db.cursor()
             # Use parameterized query to prevent SQL injection
-            cursor.execute("SELECT * FROM repos WHERE id = ?", (getdatarequest.id,))
+            cursor.execute("SELECT * FROM repos WHERE id = ?", (id,))
             data = cursor.fetchone()
 
             if not data:
@@ -99,6 +99,7 @@ def get_data(getdatarequest: getDataRequest):
                 full_name=data[2],
                 is_active=data[3],
                 backend_path=data[4],
+                webhook_id=data[5]
             )
 
     except sqlite3.Error as e:
